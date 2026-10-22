@@ -5,7 +5,7 @@ Integrantes:
 - Edrei Lizama
 - Leonardo Ojeda
 - César Adrián Domínguez
-- Saul Ek May
+- Victor Saul Ek May
 - Rodrigo Irineo Yupit
 
 UADY / Facultad de Matemáticas
