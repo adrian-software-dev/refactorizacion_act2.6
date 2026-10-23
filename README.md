@@ -1,6 +1,8 @@
 # refactorizacion_act2.6
 Actividad de refactorizacion (2.6) - Construcción de software
 
+#VERSION REFACTORIZADA
+
 Integrantes:
 - Domínguez Franco César Adrián 
 - Ek May Victor Saul
