@@ -25,48 +25,56 @@ public class Prestamo {
         return new Date(fechaPrestamo.getTime() + socio.getDiasPlazoPrestamo() * 24L * 60 * 60 * 1000);
     }
 
-    public int calcularDiasRetraso() {
-        return diasEntre(calcularFechaVencimiento(), fechaDevolucion);
+     public int calcularDiasRetraso() {
+        // Usamos FechaExtension y su método diasHasta
+        return new FechaExtension(calcularFechaVencimiento()).diasHasta(fechaDevolucion);
     }
-
     // MOVE METHOD
     public double calcularMulta(int diasRetraso) {
-        if (diasRetraso <= 0) {
-            return 0;
+        // Delega el cálculo al objeto Libro
+        return this.libro.calcularMulta(diasRetraso);
+    }
+
+   public class FechaExtension {
+        private final Date fecha;
+    
+        public FechaExtension(Date fecha) {
+            this.fecha = fecha;
         }
-        double multa = diasRetraso * libro.getMultaPorDia();
-        if (libro.getCategoria().equals("NOVEDAD")) {
-            multa = multa * 2;
+    
+        public String formatear() {
+            if (fecha == null) return "N/A";
+            return new SimpleDateFormat("dd/MM/yyyy").format(fecha);
         }
-        if (multa > libro.getValorReposicion()) {
-            multa = libro.getValorReposicion();
+    
+        public boolean esFinDeSemana() {
+            if (fecha == null) return false;
+            Calendar calendario = Calendar.getInstance();
+            calendario.setTime(fecha);
+            int dia = calendario.get(Calendar.DAY_OF_WEEK);
+            return dia == Calendar.SATURDAY || dia == Calendar.SUNDAY;
         }
-        return multa;
+    
+        public int diasHasta(Date hasta) {
+            if (fecha == null || hasta == null) return 0;
+            double milisPorDia = 24.0 * 60 * 60 * 1000;
+            return (int) Math.round((hasta.getTime() - this.fecha.getTime()) / milisPorDia);
+        }
+    
+        public Date getFecha() {
+            return fecha;
+        }
     }
-
-    // INTRODUCE LOCAL EXTENSION
-    private int diasEntre(Date desde, Date hasta) {
-        double milisPorDia = 24.0 * 60 * 60 * 1000;
-        return (int) Math.round((hasta.getTime() - desde.getTime()) / milisPorDia);
-    }
-
-    private String formatearFecha(Date fecha) {
-        return new SimpleDateFormat("dd/MM/yyyy").format(fecha);
-    }
-
-    private boolean esFinDeSemana(Date fecha) {
-        Calendar calendario = Calendar.getInstance();
-        calendario.setTime(fecha);
-        int dia = calendario.get(Calendar.DAY_OF_WEEK);
-        return dia == Calendar.SATURDAY || dia == Calendar.SUNDAY;
-    }
-
     public void imprimirResumen() {
         System.out.println("Libro: " + libro.getTitulo());
         System.out.println("Socio: " + socio.getNombre());
-        System.out.println("Prestado: " + formatearFecha(fechaPrestamo));
-        System.out.println("Vence: " + formatearFecha(calcularFechaVencimiento()));
-        System.out.println("Vence en fin de semana: " + esFinDeSemana(calcularFechaVencimiento()));
-        System.out.println("Devuelto: " + formatearFecha(fechaDevolucion));
+        System.out.println("Prestado: " + new FechaExtension(fechaPrestamo).formatear());
+        
+        // Almacenamos la extensión en una variable para evitar recalcular el vencimiento dos veces
+        FechaExtension fechaVencimiento = new FechaExtension(calcularFechaVencimiento());
+        System.out.println("Vence: " + fechaVencimiento.formatear());
+        System.out.println("Vence en fin de semana: " + fechaVencimiento.esFinDeSemana());
+        
+        System.out.println("Devuelto: " + new FechaExtension(fechaDevolucion).formatear());
     }
 }

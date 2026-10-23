@@ -24,4 +24,24 @@ public class Libro {
     public String getCategoria() { return categoria; }
     public double getMultaPorDia() { return multaPorDia; }
     public double getValorReposicion() { return valorReposicion; }
+    
+    // Pase el metodo calcularMulta que usaba Solo usa datos de Libro (multa por día, categoría, valor dereposición), 
+    // así que lo movi a Libro o sea aca.
+    //
+    public double calcularMulta(int diasRetraso) {
+        if (diasRetraso <= 0) {
+            return 0;
+        }
+        double multa = diasRetraso * this.multaPorDia;
+        
+        if (this.categoria.equals("NOVEDAD")) {
+            multa = multa * 2;
+        }
+        
+        if (multa > this.valorReposicion) {
+            multa = this.valorReposicion;
+        }
+        
+        return multa;
+    }
 }
