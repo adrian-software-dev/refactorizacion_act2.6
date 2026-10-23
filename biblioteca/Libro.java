@@ -1,12 +1,14 @@
 package biblioteca;
 
-//Tecnica Sugerida: INLINE CLASS
-//Refactor: al aplicar esta tecnica, todos los parametros de la clase Isbn
-//pasaron a formar parte de Libro.
 public class Libro {
     private String titulo;
     private String autor;
+
+    // Tecnica sugerida: INLINE CLASS (4)
+    // Antes: el ISBN estaba en la clase Isbn, que solo guardaba un String.
+    // Cambio: se elimino la clase Isbn y ahora isbn es un String dentro de Libro.
     private String isbn;
+
     private String categoria; // "NOVEDAD" o "NORMAL"
     private double multaPorDia;
     private double valorReposicion;
@@ -43,5 +45,29 @@ public class Libro {
 
     public double getValorReposicion() {
         return valorReposicion;
+    }
+
+    // Tecnica sugerida: MOVE METHOD (1)
+    // Antes: este metodo estaba en Prestamo, pero solo usa datos de Libro
+    // (multa por dia, categoria y valor de reposicion).
+    // Cambio: se movio aqui. Prestamo.calcularMulta() ahora solo llama a este.
+    public double calcularMulta(int diasRetraso) {
+        if (diasRetraso <= 0) {
+            return 0;
+        }
+
+        double multa = diasRetraso * this.multaPorDia;
+
+        // Los libros de novedad pagan el doble
+        if (this.categoria.equals("NOVEDAD")) {
+            multa = multa * 2;
+        }
+
+        // La multa nunca pasa del valor de reposicion del libro
+        if (multa > this.valorReposicion) {
+            multa = this.valorReposicion;
+        }
+
+        return multa;
     }
 }
